@@ -7,7 +7,7 @@ const SubscriptionsDetails = () => {
   return (
     <View>
       <Text>SubscriptionsDetails: {id}</Text>
-      <Link href={"/index"}>Go back</Link>
+      <Link href={"/"}>Go back</Link>
     </View>
   );
 };
