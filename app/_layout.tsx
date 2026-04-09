@@ -1,6 +1,7 @@
 import "@/global.css";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
+import { useEffect } from "react";
 
 export default function RootLayout() {
   const [fontLoaded] = useFonts({
@@ -11,6 +12,17 @@ export default function RootLayout() {
     "sans-extrabold": require("../assets/fonts/PlusJakartaSans-ExtraBold.ttf"),
     "sans-light": require("../assets/fonts/PlusJakartaSans-Light.ttf"),
   });
+
+  useEffect(() => {
+    if (fontLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontLoaded]);
+
+  if (!fontLoaded) {
+    return null;
+  }
+
   return (
     <Stack
       // This tells the app to land on (tabs) by default
