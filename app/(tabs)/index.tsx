@@ -20,8 +20,9 @@ import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 const SafeAreaView = styled(RNSafeAreaView);
 
 export default function Home() {
-  const [expendedSubscriptionId, setExpendedSubscriptionId] =
-    useState<String | null>(null);
+  const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<
+    string | null
+  >(null);
   return (
     <SafeAreaView className="flex-1 bg-background p-5">
       <FlatList
@@ -71,15 +72,15 @@ export default function Home() {
         renderItem={({ item }) => (
           <SubscriptionCard
             {...item}
-            expanded={expendedSubscriptionId === item.id}
+            expanded={expandedSubscriptionId === item.id}
             onPress={() =>
-              setExpendedSubscriptionId((currentId) =>
+              setExpandedSubscriptionId((currentId) =>
                 currentId === item.id ? null : item.id,
               )
             }
           />
         )}
-        extraData={expendedSubscriptionId}
+        extraData={expandedSubscriptionId}
         showsVerticalScrollIndicator={false}
         ItemSeparatorComponent={() => <View className="h-4" />}
         ListEmptyComponent={

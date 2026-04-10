@@ -108,7 +108,7 @@ const SubscriptionCard = ({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {status ? formatSubscriptionDateTime(status) : ""}
+                  {status?.trim() || "Not provided"}
                 </Text>
               </View>
             </View>
