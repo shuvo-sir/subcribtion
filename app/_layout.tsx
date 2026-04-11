@@ -1,7 +1,17 @@
 import "@/global.css";
+import { ClerkProvider } from "@clerk/expo";
+import { tokenCache } from "@clerk/expo/token-cache";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
+
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+
+if (!publishableKey) {
+  throw new Error(
+    "Missing Clerk Publishable Key. Add EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY to .env",
+  );
+}
 
 export default function RootLayout() {
   const [fontLoaded] = useFonts({
@@ -24,13 +34,15 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack
-      // This tells the app to land on (tabs) by default
-      initialRouteName="(tabs)"
-      screenOptions={{ headerShown: false }}
-    >
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-    </Stack>
+    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+      <Stack
+        // This tells the app to land on (tabs) by default
+        initialRouteName="(tabs)"
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      </Stack>
+    </ClerkProvider>
   );
 }
