@@ -1,6 +1,6 @@
 import "@/global.css";
-import { ClerkProvider } from "@clerk/expo";
-import { tokenCache } from "@clerk/expo/token-cache";
+import { ClerkProvider } from "@clerk/clerk-expo";
+import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";

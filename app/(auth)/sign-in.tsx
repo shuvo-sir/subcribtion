@@ -1,4 +1,4 @@
-import { useSignIn } from "@clerk/expo";
+import { useSignIn } from "@clerk/clerk-expo";
 import { type Href, Link, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -13,11 +13,11 @@ import {
 } from "react-native";
 
 export default function SignInScreen() {
-  const { signIn, isLoaded } = useSignIn();
+  // Added 'setActive' - this is required to save the session on the device
+  const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,10 +33,18 @@ export default function SignInScreen() {
       });
 
       if (result.status === "complete") {
+        // CRITICAL: This sets the session as active so you don't get redirected back to sign-in
+        await setActive({ session: result.createdSessionId });
         router.replace("/(tabs)/" as Href);
+      } else {
+        // Handle 2FA or other requirements if needed
+        console.log("Incomplete sign in status:", result.status);
       }
     } catch (err: any) {
-      setFormError("Invalid email or password.");
+      // Clerks errors are usually nested in an array
+      const errorMessage =
+        err?.errors?.[0]?.message || "Invalid email or password.";
+      setFormError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -45,44 +53,60 @@ export default function SignInScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1"
+      className="flex-1 bg-white"
     >
-      <View className="auth-safe-area">
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          <View className="auth-content justify-center">
-            <View className="auth-brand-block">
-              <View className="auth-logo-mark">
-                <Text className="auth-logo-mark-text">A</Text>
-              </View>
-              <Text className="auth-wordmark">Adrian</Text>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="flex-1 justify-center px-6 py-12">
+          {/* Brand Header */}
+          <View className="items-center mb-10">
+            <View className="w-16 h-16 bg-blue-600 rounded-2xl items-center justify-center mb-4">
+              <Text className="text-white text-3xl font-bold">A</Text>
             </View>
+            <Text className="text-3xl font-bold text-slate-900">Adrian</Text>
+            <Text className="text-slate-500 text-base">Welcome Back</Text>
+          </View>
 
-            <View className="auth-card">
-              <Text className="text-2xl font-bold text-primary mb-6">
-                Welcome Back
-              </Text>
+          {/* Sign In Card */}
+          <View className="bg-slate-50 p-6 rounded-3xl border border-slate-100 shadow-sm">
+            <Text className="text-2xl font-bold text-slate-900 mb-6 text-center">
+              Sign In
+            </Text>
 
-              {formError && (
-                <View className="mb-4 bg-destructive/10 p-3 rounded-xl">
-                  <Text className="text-destructive text-xs">{formError}</Text>
-                </View>
-              )}
+            {formError ? (
+              <View className="mb-4 bg-red-50 border border-red-200 p-3 rounded-xl">
+                <Text className="text-red-600 text-xs text-center font-medium">
+                  {formError}
+                </Text>
+              </View>
+            ) : null}
 
-              <View className="auth-field">
-                <Text className="auth-label">Email</Text>
+            <View className="space-y-4">
+              <View>
+                <Text className="text-sm font-semibold text-slate-700 mb-1 ml-1">
+                  Email
+                </Text>
                 <TextInput
-                  className="auth-input"
+                  className="h-12 bg-white border border-slate-200 rounded-xl px-4 text-slate-900"
                   autoCapitalize="none"
+                  placeholder="name@example.com"
+                  placeholderTextColor="#94a3b8"
                   keyboardType="email-address"
                   value={formData.email}
                   onChangeText={(v) => setFormData({ ...formData, email: v })}
                 />
               </View>
 
-              <View className="auth-field">
-                <Text className="auth-label">Password</Text>
+              <View className="mt-4">
+                <Text className="text-sm font-semibold text-slate-700 mb-1 ml-1">
+                  Password
+                </Text>
                 <TextInput
-                  className="auth-input"
+                  className="h-12 bg-white border border-slate-200 rounded-xl px-4 text-slate-900"
+                  placeholder="Your password"
+                  placeholderTextColor="#94a3b8"
                   secureTextEntry
                   value={formData.password}
                   onChangeText={(v) =>
@@ -92,29 +116,30 @@ export default function SignInScreen() {
               </View>
 
               <Pressable
-                className="auth-button mt-4"
+                className="h-14 bg-blue-600 rounded-2xl items-center justify-center mt-6 shadow-md active:opacity-90"
                 onPress={handleSignIn}
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text className="auth-button-text">Continue</Text>
+                  <Text className="text-white font-bold text-lg">Continue</Text>
                 )}
               </Pressable>
             </View>
-
-            <View className="auth-link-row">
-              <Text className="text-sm text-muted-foreground">
-                Don't have an account?{" "}
-              </Text>
-              <Link href="/(auth)/sign-up">
-                <Text className="auth-link text-sm">Sign up</Text>
-              </Link>
-            </View>
           </View>
-        </ScrollView>
-      </View>
+
+          {/* Footer */}
+          <View className="flex-row justify-center mt-8">
+            <Text className="text-slate-500 text-sm">
+              Don't have an account?{" "}
+            </Text>
+            <Link href="/(auth)/sign-up">
+              <Text className="text-blue-600 font-bold text-sm">Sign up</Text>
+            </Link>
+          </View>
+        </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }

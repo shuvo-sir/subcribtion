@@ -4,7 +4,7 @@
   validatePassword,
   validatePasswordMatch,
 } from "@/lib/utils";
-import { useSignUp } from "@clerk/expo";
+import { useSignUp } from "@clerk/clerk-expo";
 import { type Href, Link, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
