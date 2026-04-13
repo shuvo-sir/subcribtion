@@ -23,15 +23,17 @@ const Settings = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <Container className="flex-1 p-4">
-        <Text className="text-2xl font-bold mb-6 text-black">Settings</Text>
+    <SafeAreaView className="flex-1 bg-background">
+      <Container className="flex-1 p-5">
+        <Text className="text-2xl font-sans-bold mb-6 text-primary">
+          Settings
+        </Text>
 
         <LogoutButton
           onPress={handleLogout}
-          className="bg-red-500 rounded-lg py-3 px-4 items-center justify-center mt-auto mb-4"
+          className="auth-button mt-auto mb-4"
         >
-          <Text className="text-white font-semibold text-lg">Logout</Text>
+          <Text className="auth-button-text">Logout</Text>
         </LogoutButton>
       </Container>
     </SafeAreaView>

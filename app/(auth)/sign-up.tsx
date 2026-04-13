@@ -5,6 +5,7 @@
   validatePasswordMatch,
 } from "@/lib/utils";
 import { useSignUp } from "@clerk/clerk-expo";
+import clsx from "clsx";
 import { type Href, Link, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -176,7 +177,16 @@ export default function SignUpScreen() {
               </Text>
 
               {formError && (
-                <View className="mb-4 border border-destructive bg-destructive/10 rounded-2xl p-3">
+                <View
+                  style={{
+                    marginBottom: 16,
+                    borderWidth: 1,
+                    borderColor: "#dc2626",
+                    backgroundColor: "rgba(220, 38, 38, 0.1)",
+                    borderRadius: 16,
+                    padding: 12,
+                  }}
+                >
                   <Text className="text-xs text-destructive font-medium">
                     {formError}
                   </Text>
@@ -188,7 +198,9 @@ export default function SignUpScreen() {
                   <View className="auth-field">
                     <Text className="auth-label">Email</Text>
                     <TextInput
-                      className={`auth-input ${fieldErrors["email"] ? "auth-input-error" : ""}`}
+                      className={clsx("auth-input", {
+                        "auth-input-error": fieldErrors["email"],
+                      })}
                       placeholder="email@example.com"
                       placeholderTextColor="#a0a0a0"
                       autoCapitalize="none"
@@ -246,7 +258,12 @@ export default function SignUpScreen() {
               ) : (
                 <>
                   <TextInput
-                    className="auth-input text-center text-xl tracking-widest"
+                    className="auth-input"
+                    style={{
+                      textAlign: "center",
+                      fontSize: 20,
+                      letterSpacing: 2,
+                    }}
                     placeholder="000000"
                     placeholderTextColor="#a0a0a0"
                     maxLength={6}
