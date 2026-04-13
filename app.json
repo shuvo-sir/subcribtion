@@ -51,9 +51,11 @@
             "./assets/fonts/PlusJakartaSans-Light.ttf"
           ]
         }
-      ]
-    ],
+      ],
 
+      "expo-secure-store",
+      "expo-splash-screen"
+    ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
