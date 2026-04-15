@@ -7,8 +7,11 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Modal,
   Pressable,
+  ScrollView,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
@@ -22,6 +25,15 @@ const Settings = () => {
   const { user } = useUser();
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
+  const [showNameModal, setShowNameModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [firstName, setFirstName] = useState(user?.firstName || "");
+  const [lastName, setLastName] = useState(user?.lastName || "");
+  const [isUpdatingName, setIsUpdatingName] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   const handlePickImage = async () => {
     try {
@@ -70,6 +82,68 @@ const Settings = () => {
       router.replace("/(auth)/sign-in");
     } catch (error) {
       console.error("Logout error:", error);
+    }
+  };
+
+  const handleUpdateName = async () => {
+    try {
+      if (!firstName.trim()) {
+        Alert.alert("Error", "First name cannot be empty");
+        return;
+      }
+
+      setIsUpdatingName(true);
+      await user?.update({
+        firstName,
+        lastName,
+      });
+
+      Alert.alert("Success", "Profile name updated!");
+      setShowNameModal(false);
+    } catch (error) {
+      console.error("Update name error:", error);
+      Alert.alert("Error", "Failed to update profile name");
+    } finally {
+      setIsUpdatingName(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    try {
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        Alert.alert("Error", "Please fill in all password fields");
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        Alert.alert("Error", "New passwords do not match");
+        return;
+      }
+
+      if (newPassword.length < 8) {
+        Alert.alert("Error", "Password must be at least 8 characters long");
+        return;
+      }
+
+      setIsUpdatingPassword(true);
+      await user?.updatePassword({
+        currentPassword,
+        newPassword,
+      });
+
+      Alert.alert("Success", "Password changed successfully!");
+      setShowPasswordModal(false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      console.error("Change password error:", error);
+      Alert.alert(
+        "Error",
+        "Failed to change password. Please check your current password.",
+      );
+    } finally {
+      setIsUpdatingPassword(false);
     }
   };
 
@@ -130,12 +204,178 @@ const Settings = () => {
         </Button>
 
         <Button
+          onPress={() => setShowNameModal(true)}
+          className="bg-card border border-border rounded-2xl py-3 px-4 items-center justify-center mb-4 active:opacity-70"
+        >
+          <Text className="text-base font-sans-semibold text-primary">
+            Update Profile Name
+          </Text>
+        </Button>
+
+        <Button
+          onPress={() => setShowPasswordModal(true)}
+          className="bg-card border border-border rounded-2xl py-3 px-4 items-center justify-center mb-6 active:opacity-70"
+        >
+          <Text className="text-base font-sans-semibold text-primary">
+            Change Password
+          </Text>
+        </Button>
+
+        <Button
           onPress={handleLogout}
           className=" rounded-2xl py-4 items-center justify-center mt-auto  active:opacity-80 mb-20 bg-accent"
         >
           <Text className="text-white font-sans-bold">Logout</Text>
         </Button>
       </Container>
+
+      {/* Update Profile Name Modal */}
+      <Modal
+        visible={showNameModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowNameModal(false)}
+      >
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-background rounded-t-3xl p-6 pb-10">
+            <Text className="text-2xl font-sans-bold text-primary mb-6">
+              Update Profile Name
+            </Text>
+
+            <View className="mb-4">
+              <Text className="text-sm font-sans-semibold text-muted-foreground mb-2">
+                First Name
+              </Text>
+              <TextInput
+                value={firstName}
+                onChangeText={setFirstName}
+                placeholder="Enter first name"
+                placeholderTextColor="#999"
+                className="bg-card border border-border rounded-lg px-4 py-3 text-primary"
+              />
+            </View>
+
+            <View className="mb-6">
+              <Text className="text-sm font-sans-semibold text-muted-foreground mb-2">
+                Last Name
+              </Text>
+              <TextInput
+                value={lastName}
+                onChangeText={setLastName}
+                placeholder="Enter last name"
+                placeholderTextColor="#999"
+                className="bg-card border border-border rounded-lg px-4 py-3 text-primary"
+              />
+            </View>
+
+            <View className="flex-row gap-3">
+              <Button
+                onPress={() => setShowNameModal(false)}
+                className="flex-1 bg-card border border-border rounded-lg py-3 items-center justify-center active:opacity-70"
+              >
+                <Text className="font-sans-semibold text-primary">Cancel</Text>
+              </Button>
+              <Button
+                onPress={handleUpdateName}
+                disabled={isUpdatingName}
+                className="flex-1 bg-accent rounded-lg py-3 items-center justify-center active:opacity-80"
+              >
+                {isUpdatingName ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="font-sans-semibold text-white">Save</Text>
+                )}
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Change Password Modal */}
+      <Modal
+        visible={showPasswordModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowPasswordModal(false)}
+      >
+        <View className="flex-1 bg-black/50 justify-end">
+          <ScrollView
+            className="bg-background rounded-t-3xl p-6"
+            contentContainerStyle={{ paddingBottom: 40 }}
+          >
+            <Text className="text-2xl font-sans-bold text-primary mb-6">
+              Change Password
+            </Text>
+
+            <View className="mb-4">
+              <Text className="text-sm font-sans-semibold text-muted-foreground mb-2">
+                Current Password
+              </Text>
+              <TextInput
+                value={currentPassword}
+                onChangeText={setCurrentPassword}
+                placeholder="Enter current password"
+                placeholderTextColor="#999"
+                secureTextEntry
+                className="bg-card border border-border rounded-lg px-4 py-3 text-primary"
+              />
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-sm font-sans-semibold text-muted-foreground mb-2">
+                New Password
+              </Text>
+              <TextInput
+                value={newPassword}
+                onChangeText={setNewPassword}
+                placeholder="Enter new password (min 8 characters)"
+                placeholderTextColor="#999"
+                secureTextEntry
+                className="bg-card border border-border rounded-lg px-4 py-3 text-primary"
+              />
+            </View>
+
+            <View className="mb-6">
+              <Text className="text-sm font-sans-semibold text-muted-foreground mb-2">
+                Confirm Password
+              </Text>
+              <TextInput
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder="Confirm new password"
+                placeholderTextColor="#999"
+                secureTextEntry
+                className="bg-card border border-border rounded-lg px-4 py-3 text-primary"
+              />
+            </View>
+
+            <View className="flex-row gap-3">
+              <Button
+                onPress={() => {
+                  setShowPasswordModal(false);
+                  setCurrentPassword("");
+                  setNewPassword("");
+                  setConfirmPassword("");
+                }}
+                className="flex-1 bg-card border border-border rounded-lg py-3 items-center justify-center active:opacity-70"
+              >
+                <Text className="font-sans-semibold text-primary">Cancel</Text>
+              </Button>
+              <Button
+                onPress={handleChangePassword}
+                disabled={isUpdatingPassword}
+                className="flex-1 bg-accent rounded-lg py-3 items-center justify-center active:opacity-80"
+              >
+                {isUpdatingPassword ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="font-sans-semibold text-white">Update</Text>
+                )}
+              </Button>
+            </View>
+          </ScrollView>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
