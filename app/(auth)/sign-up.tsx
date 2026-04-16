@@ -19,6 +19,8 @@ import {
   View,
 } from "react-native";
 
+// Simple two-step sign-up flow: 1) collect email, password, and full name, 2) verify email with code
+
 type SignUpStep = "form" | "verification";
 
 interface FormData {
