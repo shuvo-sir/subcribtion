@@ -107,7 +107,7 @@ export default function CreateSubscriptionModal({
 
     // Track subscription created event
     posthog.capture("subscription_created", {
-      name,
+      name: newSubscription.name,
       price: priceNum,
       category,
       frequency,

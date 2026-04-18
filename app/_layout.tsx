@@ -29,10 +29,10 @@ function RootLayoutContent() {
   const { isSignedIn, isLoaded } = useAuth();
 
   useEffect(() => {
-    if (fontLoaded) {
+    if (fontLoaded && isLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [fontLoaded]);
+  }, [fontLoaded, isLoaded]);
 
   if (!fontLoaded || !isLoaded) {
     return (
