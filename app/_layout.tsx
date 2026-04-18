@@ -1,3 +1,4 @@
+import { SubscriptionsProvider } from "@/context/SubscriptionsContext";
 import "@/global.css";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
@@ -40,14 +41,16 @@ export default function RootLayout() {
       options={{ host: process.env.EXPO_PUBLIC_POSTHOG_HOST }}
     >
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-        <Stack
-          // This tells the app to land on (tabs) by default
-          initialRouteName="(tabs)"
-          screenOptions={{ headerShown: false }}
-        >
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </Stack>
+        <SubscriptionsProvider>
+          <Stack
+            // This tells the app to land on (tabs) by default
+            initialRouteName="(tabs)"
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          </Stack>
+        </SubscriptionsProvider>
       </ClerkProvider>
     </PostHogProvider>
   );
