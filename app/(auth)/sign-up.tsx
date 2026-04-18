@@ -31,7 +31,7 @@ interface FormData {
 }
 
 export default function SignUpScreen() {
-  const { isLoaded, signUp } = useSignUp();
+  const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
 
   const [step, setStep] = useState<SignUpStep>("form");
@@ -126,6 +126,8 @@ export default function SignUpScreen() {
       });
 
       if (completeSignUp.status === "complete") {
+        // Set the session as active so the user is logged in
+        await setActive({ session: completeSignUp.createdSessionId });
         router.replace("/(tabs)/" as Href);
       } else {
         console.error(JSON.stringify(completeSignUp, null, 2));
