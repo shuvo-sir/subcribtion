@@ -1,11 +1,12 @@
 import { SubscriptionsProvider } from "@/context/SubscriptionsContext";
 import "@/global.css";
-import { ClerkProvider } from "@clerk/clerk-expo";
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { PostHogProvider } from "posthog-react-native";
 import { useEffect } from "react";
+import { ActivityIndicator, View } from "react-native";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
@@ -15,7 +16,7 @@ if (!publishableKey) {
   );
 }
 
-export default function RootLayout() {
+function RootLayoutContent() {
   const [fontLoaded] = useFonts({
     "sans-regular": require("../assets/fonts/PlusJakartaSans-Regular.ttf"),
     "sans-medium": require("../assets/fonts/PlusJakartaSans-Medium.ttf"),
@@ -25,16 +26,37 @@ export default function RootLayout() {
     "sans-light": require("../assets/fonts/PlusJakartaSans-Light.ttf"),
   });
 
+  const { isSignedIn, isLoaded } = useAuth();
+
   useEffect(() => {
-    if (fontLoaded) {
+    if (fontLoaded && isLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [fontLoaded]);
+  }, [fontLoaded, isLoaded]);
 
-  if (!fontLoaded) {
-    return null;
+  if (!fontLoaded || !isLoaded) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" color="#2563eb" />
+      </View>
+    );
   }
 
+  // Determine initial route based on authentication status
+  const initialRouteName = isSignedIn ? "(tabs)" : "(auth)";
+
+  return (
+    <Stack
+      initialRouteName={initialRouteName}
+      screenOptions={{ headerShown: false }}
+    >
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
   return (
     <PostHogProvider
       apiKey={process.env.EXPO_PUBLIC_POSTHOG_KEY!}
@@ -42,14 +64,7 @@ export default function RootLayout() {
     >
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
         <SubscriptionsProvider>
-          <Stack
-            // This tells the app to land on (tabs) by default
-            initialRouteName="(tabs)"
-            screenOptions={{ headerShown: false }}
-          >
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          </Stack>
+          <RootLayoutContent />
         </SubscriptionsProvider>
       </ClerkProvider>
     </PostHogProvider>
