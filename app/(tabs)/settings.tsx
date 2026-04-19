@@ -189,41 +189,51 @@ const Settings = () => {
           </Text>
         </View>
 
-        <Button
-          onPress={handlePickImage}
-          disabled={isUploading}
-          className="bg-card border border-border rounded-2xl py-3 px-4 items-center justify-center mb-6 active:opacity-70"
-        >
-          {isUploading ? (
-            <ActivityIndicator color="#081126" />
-          ) : (
-            <Text className="text-base font-sans-semibold text-primary">
-              Change Profile Picture
+        {/* Settings Card */}
+        <View className="bg-card border border-border rounded-2xl p-6 mb-6">
+          <Text className="text-lg font-sans-bold text-primary mb-4">
+            Account Settings
+          </Text>
+
+          {/* Change Profile Picture Button */}
+          <Button
+            onPress={handlePickImage}
+            disabled={isUploading}
+            className="bg-gray-800 rounded-xl py-3 px-4 items-center justify-center mb-3 active:opacity-70"
+          >
+            {isUploading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text className="text-base font-sans-semibold text-white">
+                Change Profile Picture
+              </Text>
+            )}
+          </Button>
+
+          {/* Update Profile Button */}
+          <Button
+            onPress={() => setShowNameModal(true)}
+            className="bg-gray-700 rounded-xl py-3 px-4 items-center justify-center mb-3 active:opacity-70"
+          >
+            <Text className="text-base font-sans-semibold text-white">
+              Update Profile
             </Text>
-          )}
-        </Button>
+          </Button>
 
-        <Button
-          onPress={() => setShowNameModal(true)}
-          className="bg-card border border-border rounded-2xl py-3 px-4 items-center justify-center mb-4 active:opacity-70"
-        >
-          <Text className="text-base font-sans-semibold text-primary">
-            Update Profile Name
-          </Text>
-        </Button>
-
-        <Button
-          onPress={() => setShowPasswordModal(true)}
-          className="bg-card border border-border rounded-2xl py-3 px-4 items-center justify-center mb-6 active:opacity-70"
-        >
-          <Text className="text-base font-sans-semibold text-primary">
-            Change Password
-          </Text>
-        </Button>
+          {/* Change Password Button */}
+          <Button
+            onPress={() => setShowPasswordModal(true)}
+            className="bg-gray-600 rounded-xl py-3 px-4 items-center justify-center active:opacity-70"
+          >
+            <Text className="text-base font-sans-semibold text-white">
+              Change Password
+            </Text>
+          </Button>
+        </View>
 
         <Button
           onPress={handleLogout}
-          className=" rounded-2xl py-4 items-center justify-center mt-auto  active:opacity-80 mb-20 bg-accent"
+          className="rounded-2xl py-4 items-center justify-center active:opacity-80 mb-20 bg-black"
         >
           <Text className="text-white font-sans-bold">Logout</Text>
         </Button>
