@@ -163,7 +163,7 @@ const Insights = () => {
         </StyledView>
 
         {/* History Section - All Subscriptions */}
-        <StyledView className="px-6 py-4">
+        <StyledView className="px-6 py-4 pb-16">
           <StyledText className="text-lg font-bold text-primary mb-4">
             Subscription History
           </StyledText>

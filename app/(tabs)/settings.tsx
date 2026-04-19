@@ -233,7 +233,7 @@ const Settings = () => {
 
         <Button
           onPress={handleLogout}
-          className="rounded-2xl py-4 items-center justify-center mt-auto active:opacity-80 mb-20 bg-black"
+          className="rounded-2xl py-4 items-center justify-center active:opacity-80 mb-20 bg-black"
         >
           <Text className="text-white font-sans-bold">Logout</Text>
         </Button>

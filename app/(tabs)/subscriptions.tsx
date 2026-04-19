@@ -49,7 +49,7 @@ const Subscriptions = () => {
           removeClippedSubviews={false}
           initialNumToRender={10}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 40 }}
+          contentContainerStyle={{ paddingBottom: 90 }}
           ListHeaderComponent={
             <>
               {/* Header */}
